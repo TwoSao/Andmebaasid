@@ -1,6 +1,6 @@
 andmebaas - AB
 andmebaaside haldus -  управление базой данных
-andmebaasi haldussüsteem - система управления базами данных (СУБД или ест. ABHS)
+andmebaasi haldussüsteem - система управления базами данных (СУБД или ест. ABHS. SQL Server / XAMPP / Oracle / MS Access )
 andmed - данные
 tabel - таблица
 väli(поле) veerg - столбцы
@@ -9,5 +9,10 @@ päring - запрос
 loo - создать
 laadi alla - скачать
 laadi üles - закачать
-
+rakendus - приложение
+varundamine - резервное копирование
+taastamine - восстановление
+päringukeel - язык запросов
+relatsioon andmebaas - база данных отношений(Связаны)
+seos - связь
 
