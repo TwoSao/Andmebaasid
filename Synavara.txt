@@ -15,4 +15,4 @@ taastamine - восстановление
 päringukeel - язык запросов
 relatsioon andmebaas - база данных отношений(Связаны)
 seos - связь
-
+Piirangud - огранечение 
