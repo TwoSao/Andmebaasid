@@ -32,3 +32,38 @@ drop table opilane;
 Delete from opilane where opilaneId=2;
 update opilane set aadress='Tartu'
 where opilaneid=3
+
+CREATE TABLE language
+(
+ID int NOT NULL PRIMARY KEY,
+Code char(3) NOT NULL,
+Language varchar(50) NOT NULL,
+IsOfficial bit,
+Percentage smallint
+);
+select * from language
+
+insert into language(ID, Code, Language)
+Values(2, 'RUS', 'vene'), (3, 'ENG', 'inglise'), (4, 'DE', 'saksa')
+
+Create table keelevalik(
+keeleValikId  int primary key identity(1,1),
+valikuNimetus varchar(10) not null,
+opilaneId int,
+Foreign key (opilaneId) references opilane(opilaneId),
+Language int,
+Foreign key (Language) references Language(ID)
+)
+select * from keelevalik
+select * from language
+select * from opilane
+
+Insert into keelevalik(valikuNimetus, opilaneId, Language)
+Values('valik B', 2, 3)
+
+Delete from keelevalik where opilaneId=4; 
+
+Select opilane.eesinimi, language.Language
+from opilane, language, keelevalik
+Where opilane.opilaneid=keelevalik.opilaneId
+and language.ID=keelevalik.Language
