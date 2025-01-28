@@ -27,7 +27,7 @@ Values(
 0,
 3)
 --tabeli kustutamine
-drop table opilane;
+drop table oppimine;
 --rida kustuma
 Delete from opilane where opilaneId=2;
 update opilane set aadress='Tartu'
@@ -67,3 +67,18 @@ Select opilane.eesinimi, language.Language
 from opilane, language, keelevalik
 Where opilane.opilaneid=keelevalik.opilaneId
 and language.ID=keelevalik.Language
+------------------------------------------------------------------------------------
+--vigane kood
+create table oppimine(
+oppimineId int primary key identity(1,1),
+aine varchar(35) not null,
+aasta int,
+opilanesId int,
+opetaja varchar(25),
+hinne int,
+Foreign key (opilanesId) references opilane(opilaneId)
+)
+Insert into oppimine(aine, aasta,opetaja,hinne)
+values('ingli', 15, 1, 'Sayapina', 5 )
+select * from opilane, oppimine
+where opilane.opilaneId=oppimine.opilanesId
