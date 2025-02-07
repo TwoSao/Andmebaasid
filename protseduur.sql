@@ -7,7 +7,7 @@ linnNimi varchar(30),
 rahvaArv int);
 select * from linn
 insert into linn(linnNimi, rahvaArv)
-Values('Kiev', 662476)
+Values('TRT', 662476)
 
 -- функция которая добавляет город
 Create procedure lisaLinn
@@ -23,7 +23,7 @@ select * from linn;
 END;
 
 -- запуск функции
-exec lisaLinn @lnimi='Tallinn', @rArv=53236
+exec lisaLinn @lnimi='Viimsi', @rArv=53236
 
 
 delete from linn where linnId=4;
@@ -49,3 +49,76 @@ where linnNimi like @taht + '%'; -- '%' любое количество симв
 
 end;
 exec linnaOtsing T
+-- 
+Alter table linn ADD test int
+select * from linn
+
+Alter table linn drop column test;
+
+create procedure veeruLisaKustuta
+@vakik varchar(20),
+@veerunimi varchar(20),
+@tyype varchar(20) = null
+as 
+begin
+declare  @sqltegevus as varchar(max)
+set @sqltegevus=case
+when @vakik='add' then CONCAT('Alter table linn ADD ', @veerunimi, ' ', @tyype)
+when @vakik='drop' then CONCAT('Alter table linn DROP COLUMN ', @veerunimi)
+end;
+print @sqltegevus;
+begin
+Exec (@sqltegevus);
+end
+end;
+drop procedure veeruLisaKustuta
+exec veeruLisaKustuta @vakik='drop', @veerunimi='test3';
+select * from linn
+
+
+create procedure veeruLisaKustutaTabelis
+@vakik varchar(20),
+@tabelinimi varchar(25),
+@veerunimi varchar(20),
+@tyype varchar(20) = null
+as 
+begin
+declare  @sqltegevus as varchar(max)
+set @sqltegevus=case
+when @vakik='add' then CONCAT('Alter table ', @tabelinimi, ' ADD ', @veerunimi, ' ', @tyype)
+when @vakik='drop' then CONCAT('Alter table ', @tabelinimi, ' DROP COLUMN ', @veerunimi)
+end;
+print @sqltegevus;
+begin
+Exec (@sqltegevus);
+end
+end;
+drop procedure veeruLisaKustutaTabelis
+exec veeruLisaKustutaTabelis @vakik='add', @tabelinimi='linn', @veerunimi='test3', @tyype='int';
+select * from linn
+exec veeruLisaKustutaTabelis @vakik='drop', @tabelinimi='linn', @veerunimi='test3';
+
+--protseduur tingimusega
+create procedure rahvaHinnang
+@piir int
+
+as
+begin
+select linnNimi, rahvaArv, IIF(rahvaArv<@piir, 'Väike linn', 'Suur linn') as Hinnang
+from linn;
+
+end;
+drop procedure rahvaHinnang
+exec rahvaHinnang 299999
+-- agregaat funksioonid: sum(), AVG(), min(), max(), count()
+
+
+create procedure kokkuRahvaarv
+
+as
+begin
+select sum(rahvaArv) as 'Kokku rahvaArv', AVG(rahvaArv) as 'keskmine rahvaArv', COUNT(*) as 'Linnade arv'
+from linn
+end;
+drop procedure kokkuRahvaarv
+exec kokkuRahvaarv
