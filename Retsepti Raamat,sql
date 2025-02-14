@@ -1,0 +1,201 @@
+create database RetseptiRaamatBlahun
+use RetseptiRaamatBlahun
+
+CREATE TABLE kasutaja (
+    kasutaja_id INT PRIMARY KEY identity(1,1),
+    eesnimi VARCHAR(50),
+    perenimi VARCHAR(50) not null,
+    email VARCHAR(150)
+);
+INSERT INTO kasutaja (eesnimi, perenimi, email) VALUES
+('Mihkel', 'Tamm', 'mihkel.tamm@example.com'),
+('Laura', 'Kask', 'laura.kask@example.com'),
+('Andres', 'Saar', 'andres.saar@example.com'),
+('Katri', 'Lepik', 'katri.lepik@example.com'),
+('Martin', 'Põder', 'martin.poder@example.com');
+select * from kasutaja
+CREATE TABLE kategooria (
+    kategooria_id INT PRIMARY KEY identity(1,1),
+    kategooria_nimi VARCHAR(50)
+);
+DELETE kategooria
+INSERT INTO kategooria (kategooria_nimi) VALUES
+('Supid'),
+('Magustoidud'),
+('Põhiroad'),
+('Salatid'),
+('Joogid');
+select * from kategooria
+
+CREATE TABLE toiduaine (
+    toiduaine_id INT PRIMARY KEY IDENTITY(1,1),
+    toiduaine_nimi VARCHAR(100)
+);
+
+INSERT INTO toiduaine (toiduaine_nimi) VALUES
+('Kartul'),
+('Porgand'),
+('Kanafilee'),
+('Riis'),
+('Juust'),
+('Tomat'),
+('Kurkk'),
+('Muna'),
+('Jahu'),
+('Suhkur');
+
+CREATE TABLE yhik (
+    yhik_id INT PRIMARY KEY IDENTITY(1,1),
+    yhik_nimi VARCHAR(100)
+);
+
+INSERT INTO yhik(yhik_nimi)   VALUES
+('ML'),
+('TL'),
+('SL'),
+('G'),
+('KG');
+
+SELECT * FROM yhik
+
+CREATE TABLE retsept (
+    retsept_id INT PRIMARY KEY IDENTITY(1, 1),
+    retsepti_nimi VARCHAR(100),
+    kirjeldus VARCHAR(200),
+    juhend VARCHAR(500),
+    sisestatud_kp DATE,
+    kasutaja_id INT,
+    kategooria_id INT,
+    FOREIGN KEY (kasutaja_id) REFERENCES kasutaja(kasutaja_id),
+    FOREIGN KEY (kategooria_id) REFERENCES kategooria(kategooria_id)
+);
+INSERT INTO retsept (retsepti_nimi, kirjeldus, juhend, sisestatud_kp, kasutaja_id, kategooria_id) VALUES
+('Kartulisupp', 'Kartul ja porgand supis.', 'Keeda kartul ja porgand puljongis.', '2025-02-14', 6, 1),
+('Šokolaadikook', 'Magus šokolaadikook.', 'Sega koostisosad ja küpseta.', '2025-02-14', 7, 2),
+('Kana-riis', 'Kanafilee ja riis.', 'Prae kana ja sega riisiga.', '2025-02-14', 7, 3),
+('Kreeka salat', 'Tomat, kurk ja juust.', 'Sega koostisosad kokku.', '2025-02-14', 8, 4),
+('Smuuti', 'Marjad ja jogurt.', 'Blenderda ja serveeri.', '2025-02-14', 9, 5);
+
+SELECT * FROM retsept
+DELETE FROM  retsept WHERE kategooria_id = 2
+
+CREATE TABLE koostis (
+    koostis_id INT PRIMARY KEY IDENTITY(1,1),
+    kogus INT,
+    retsept_retsept_id INT,
+    toiduaine_id INT,
+    yhik_id INT,
+    FOREIGN KEY (retsept_retsept_id) REFERENCES retsept(retsept_id),
+    FOREIGN KEY (toiduaine_id) REFERENCES toiduaine(toiduaine_id),
+    FOREIGN KEY (yhik_id) REFERENCES yhik(yhik_id)
+);
+DROP TABLE koostis
+INSERT INTO koostis(kogus, retsept_retsept_id, toiduaine_id, yhik_id) VALUES
+(3, 4, 2, 1),
+(2, 6, 2, 2),
+(1, 7, 3, 4),
+(4, 8, 4, 1);
+
+SELECT * FROM koostis
+
+SELECT * FROM retsept;
+SELECT * FROM toiduaine;
+SELECT * FROM yhik;
+SELECT * FROM kasutaja;
+DROP table kasutaja
+delete retsept
+SELECT * FROM kategooria;
+
+
+CREATE TABLE tehtud (
+    tehtud_id INT PRIMARY KEY,
+    tehtud_kp DATE,
+    retsept_id INT,
+    FOREIGN KEY (retsept_id) REFERENCES retsept(retsept_id)
+);
+INSERT INTO tehtud(tehtud_kp, retsept_id) VALUE
+()
+
+CREATE PROCEDURE additem
+    @retseptiNimi VARCHAR(100),
+    @kirjeldusP VARCHAR(200),
+    @juhendP VARCHAR(500),
+    @sisestatudKp DATE,
+    @kasutajaId INT,
+    @kategooriaId INT
+AS
+BEGIN
+    INSERT INTO retsept (retsepti_nimi, kirjeldus, juhend, sisestatud_kp, kasutaja_id, kategooria_id)
+    VALUES (@retseptiNimi, @kirjeldusP, @juhendP, @sisestatudKp, @kasutajaId, @kategooriaId);
+END;
+exec additem 'newrets', 'NewL', 'NewJ', '2025-02-14', 6, 1
+select * from retsept
+
+CREATE PROCEDURE additemKoostis
+@kogusP int,
+@retseppRetspetId int,
+@toiduaineId int,
+@yhikId int
+
+AS
+BEGIN
+INSERT INTO koostis(kogus, retsept_retsept_id, toiduaine_id, yhik_id) VALUES
+(@kogusP, @retseppRetspetId, @toiduaineId ,@yhikId)
+
+END;
+
+exec additemKoostis 1, 7, 3, 4
+
+SELECT * FROM koostis
+
+CREATE PROCEDURE additemtehtud
+@tehtudKp date,
+@tehtudId int
+
+AS
+BEGIN
+INSERT INTO tehtud(tehtud_kp, retsept_id) VALUE
+(@tehtudKp, @tehtudId)
+END;
+
+create procedure veeruLisaKustutaTabelis
+@vakik varchar(20),
+@tabelinimi varchar(25),
+@veerunimi varchar(20),
+@tyype varchar(20) = null
+as 
+begin
+declare  @sqltegevus as varchar(max)
+set @sqltegevus=case
+when @vakik='add' then CONCAT('Alter table ', @tabelinimi, ' ADD ', @veerunimi, ' ', @tyype)
+when @vakik='drop' then CONCAT('Alter table ', @tabelinimi, ' DROP COLUMN ', @veerunimi)
+end;
+print @sqltegevus;
+begin
+Exec (@sqltegevus);
+end
+end;
+-- 
+CREATE TABLE tagasiside (
+    tagasiside_id INT PRIMARY KEY identity(1,1),
+    retsept_id INT,
+    sisu VARCHAR(255),
+    FOREIGN KEY (retsept_id) REFERENCES retsept(retsept_id)
+);
+
+create procedure veeruLisaKustutaTagasiside
+@vakik varchar(20),
+@veerunimi varchar(20),
+@tyype varchar(20) = null
+as 
+begin
+declare  @sqltegevus as varchar(max)
+set @sqltegevus=case
+when @vakik='add' then CONCAT('Alter table tagasiside', ' ADD ', @veerunimi, ' ', @tyype)
+when @vakik='drop' then CONCAT('Alter table tagasiside', ' DROP COLUMN ', @veerunimi)
+end;
+print @sqltegevus;
+begin
+Exec (@sqltegevus);
+end
+end;
