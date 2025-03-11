@@ -1,0 +1,92 @@
+CREATE DATABASE relationships
+use relationships
+
+CREATE TABLE Autorid (
+    Autori_ID INT IDENTITY(1,1) PRIMARY KEY,
+    Eesnimi VARCHAR(55),
+    Perekonnanimi VARCHAR(55),
+    Sünniaasta INT,
+    Sünnikoht VARCHAR(55),
+    Rahvus VARCHAR(55),
+    Elukoht VARCHAR(55),
+    CV VARCHAR(55),
+    Portree VARBINARY(MAX),
+    Kodulehekülg VARCHAR(55)
+);
+
+CREATE TABLE Teose_Liik (
+    Liigi_ID INT IDENTITY(1,1) PRIMARY KEY,
+    Selgitav_text VARCHAR(55)
+);
+
+CREATE TABLE Teosed (
+    Teose_ID INT IDENTITY(1,1) PRIMARY KEY,
+    Pealkiri VARCHAR(55),
+    Ilmumiskoht VARCHAR(55),
+    Ilmumisaasta INT,
+    Lk INT,
+    Liigi_ID INT,
+    Kirjastus VARCHAR(55),
+    žanr VARCHAR(55),
+    FOREIGN KEY (Liigi_ID) REFERENCES Teose_Liik(Liigi_ID)
+);
+
+CREATE TABLE Autorlus (
+    Teose_ID INT,
+    Autori_ID INT,
+    PRIMARY KEY (Teose_ID, Autori_ID),
+    FOREIGN KEY (Teose_ID) REFERENCES Teosed(Teose_ID),
+    FOREIGN KEY (Autori_ID) REFERENCES Autorid(Autori_ID)
+);
+
+-- Создание таблицы Kasutamine (Использование)
+CREATE TABLE Kasutamine (
+    Sissekande_nr INT IDENTITY(1,1) PRIMARY KEY,
+    Teose_ID INT,
+    Kasutusviisi_kirjeldu VARCHAR(55),
+    FOREIGN KEY (Teose_ID) REFERENCES Teosed(Teose_ID)
+);
+
+
+
+
+
+INSERT INTO Autorid (Eesnimi, Perekonnanimi, Sünniaasta, Sünnikoht, Rahvus) VALUES
+('Jaan', 'Kross', 1920, 'Tallinn', 'Eesti'),
+('Viivi', 'Luik', 1946, 'Tänassilma', 'Eesti'),
+('Andrus', 'Kivirähk', 1970, 'Tallinn', 'Eesti'),
+('Tõnu', 'Õnnepalu', 1962, 'Tallinn', 'Eesti'),
+('Maimu', 'Berg', 1945, 'Tallinn', 'Eesti');
+
+INSERT INTO Teose_Liik (Selgitav_text) VALUES
+('Romaan'),
+('Luulekogu'),
+('Näidend'),
+('Esseekogu'),
+('Mälestused');
+
+INSERT INTO Teosed (Pealkiri, Ilmumiskoht, Ilmumisaasta, Lk, Liigi_ID, Kirjastus, žanr) VALUES
+('Keisri hull', 'Tallinn', 1978, 480, 1, 'Eesti Raamat', 'Ajalooline romaan'),
+('Seitsmes rahukevad', 'Tallinn', 1985, 224, 1, 'Eesti Raamat', 'Autobiograafiline romaan'),
+('Rehepapp', 'Tallinn', 2000, 352, 1, 'Varrak', 'Fantaasiaromaan'),
+('Piiririik', 'Tallinn', 1993, 208, 1, 'Vagabund', 'Autobiograafiline romaan'),
+('Mina, Raimond Valgre', 'Tallinn', 2003, 288, 5, 'Tänapäev', 'Mälestused');
+INSERT INTO Autorlus (Teose_ID, Autori_ID) VALUES
+(1, 1),
+(2, 2),
+(3, 3),
+(4, 4),
+(5, 5);
+
+INSERT INTO Kasutamine (Teose_ID, Kasutusviisi_kirjeldu) VALUES
+(1, 'Kohustuslik kirjandus koolis'),
+(2, 'Soovituslik kirjandus raamatukogus'),
+(3, 'Menukirjandus raamatupoes'),
+(4, 'Teaduslik uurimus'),
+(5, 'Ajalooalane kirjandus');
+
+
+SELECT Teose_Liik.Selgitav_text, Teosed.Pealkiri
+FROM Teosed INNER JOIN Teose_Liik ON Teosed.Liigi_ID = Teose_Liik.Liigi_ID
+ORDER BY Teose_Liik.Selgitav_text;
+
